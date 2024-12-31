@@ -83,9 +83,12 @@ const OkeyScoreTracker: React.FC = () => {
     return expandedRounds[`${playerId}-${roundIndex}`] ?? (roundIndex === currentRound);
   };
 
-  const addScore = (playerIndex: number, score: string) => {
+  const addScore = (playerIndex: number, scoreStr: string) => {
+    const score = parseInt(scoreStr, 10);
+    if (isNaN(score)) return;
+
     const newPlayers = [...players];
-    newPlayers[playerIndex].rounds[currentRound].push(Number(score));
+    newPlayers[playerIndex].rounds[currentRound].push(score);
     setPlayers(newPlayers);
     setInputValues(prev => ({
       ...prev,
@@ -94,9 +97,14 @@ const OkeyScoreTracker: React.FC = () => {
   };
 
   const removeLastScore = (playerIndex: number) => {
-    const newPlayers = [...players];
-    newPlayers[playerIndex].rounds[currentRound].pop();
-    setPlayers(newPlayers);
+    setPlayers(prevPlayers => {
+      const newPlayers = JSON.parse(JSON.stringify(prevPlayers));
+      const currentRoundScores = newPlayers[playerIndex].rounds[currentRound];
+      if (currentRoundScores.length > 0) {
+        currentRoundScores.pop();
+      }
+      return newPlayers;
+    });
   };
 
   const calculateRoundTotal = (scores: number[]): number => {
@@ -142,9 +150,20 @@ const OkeyScoreTracker: React.FC = () => {
     })));
   };
 
+  const hasAnyScores = (): boolean => {
+    return players.some(player => 
+      player.rounds.some(round => round.length > 0)
+    );
+  };
+
   const addPlayer = () => {
+    if (hasAnyScores()) {
+      // Could add a toast notification here if you want to show an error message
+      return;
+    }
+    
     const newId = Math.max(...players.map(p => p.id)) + 1;
-    const emptyRounds = Array(currentRound + 1).fill([]).map(() => []);
+    const emptyRounds = Array(currentRound + 1).fill(null).map(() => []);
     setPlayers([...players, {
       id: newId,
       name: `Player ${newId}`,
@@ -187,7 +206,9 @@ const OkeyScoreTracker: React.FC = () => {
             <Button 
               variant="outline" 
               onClick={addPlayer}
-              className="flex items-center gap-2 border-primary hover:bg-primary/10"
+              disabled={hasAnyScores()}
+              title={hasAnyScores() ? "Cannot add players after game has started" : "Add new player"}
+              className="flex items-center gap-2 border-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <UserPlus className="w-4 h-4" />
               Add Player
@@ -273,12 +294,14 @@ const OkeyScoreTracker: React.FC = () => {
                 <div className="flex gap-2">
                   <Input
                     type="number"
-                    placeholder="Enter score"
+                    placeholder="Enter score (+ or -)"
                     value={inputValues[player.id] || ''}
                     onChange={(e) => handleInputChange(player.id, e.target.value)}
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter' && (e.target as HTMLInputElement).value) {
-                        addScore(playerIndex, (e.target as HTMLInputElement).value);
+                        const value = (e.target as HTMLInputElement).value;
+                        // Allow negative numbers by using the raw input value
+                        addScore(playerIndex, value);
                       }
                     }}
                     className="w-full text-lg"
@@ -288,6 +311,7 @@ const OkeyScoreTracker: React.FC = () => {
                     onClick={() => removeLastScore(playerIndex)}
                     className="flex items-center border-primary hover:bg-primary/10"
                     title="Remove last score"
+                    disabled={players[playerIndex].rounds[currentRound].length === 0}
                   >
                     <MinusCircle className="w-4 h-4" />
                   </Button>

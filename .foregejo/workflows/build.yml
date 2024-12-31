@@ -1,0 +1,76 @@
+name: Run Playwright Tests ${{ github.actor }}
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: docker
+    container:
+      image: harbor.lxc.beertini.com/beertini/node:20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          repository: ${{ github.repository }}
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+  buildx:
+    runs-on: docker
+    services:
+      dind:
+        image: docker:dind
+        privileged: true
+        options: >-
+          --cgroupns=host
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        env:
+          DOCKER_TLS_CERTDIR: ""
+    container:
+      image: harbor.lxc.beertini.com/beertini/node:20
+      env:
+        DOCKER_HOST: tcp://dind:2375
+      options: >-
+        --link dind
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Install Docker
+        run: |
+          apt-get update
+          apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+          curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+          apt-get update
+          apt-get install -y docker-ce docker-ce-cli containerd.io
+
+      - name: Login to Harbor Registry
+        run: |
+          echo "${{ secrets.HARBOR_PASSWORD }}" | docker login harbor.lxc.beertini.com --username "${{ secrets.HARBOR_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t harbor.lxc.beertini.com/library/vite-app:latest .
+          docker tag harbor.lxc.beertini.com/library/vite-app:latest harbor.lxc.beertini.com/library/vite-app:${{ github.sha }}
+          docker push harbor.lxc.beertini.com/library/vite-app:latest
+          docker push harbor.lxc.beertini.com/library/vite-app:${{ github.sha }}

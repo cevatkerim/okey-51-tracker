@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import okey51Logo from '../assets/logo.png';
-import NumberTicker from "@/components/ui/number-ticker";
 import SparklesText from "@/components/ui/sparkles-text";
 import { BorderBeam } from "./ui/border-beam";
 import confetti from 'canvas-confetti';
@@ -26,9 +25,9 @@ interface GameState {
 const STORAGE_KEY = 'okey-tracker-state';
 
 const initialPlayers: Player[] = [
-  { id: 1, name: 'Ozge', rounds: [[]], isEditing: false },
-  { id: 2, name: 'John', rounds: [[]], isEditing: false },
-  { id: 3, name: 'Kerim', rounds: [[]], isEditing: false }
+  { id: 1, name: 'Kerim', rounds: [[]], isEditing: false },
+  { id: 2, name: 'Ozge', rounds: [[]], isEditing: false },
+  { id: 3, name: 'John', rounds: [[]], isEditing: false }
 ];
 
 const OkeyScoreTracker: React.FC = () => {
@@ -294,7 +293,7 @@ const OkeyScoreTracker: React.FC = () => {
   }
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="p-4 max-w-6xl mx-auto" data-testid="score-tracker">
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-4">
@@ -307,7 +306,7 @@ const OkeyScoreTracker: React.FC = () => {
               <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-foreground">
                 Score Tracker
               </h1>
-              <div className="text-lg text-muted-foreground">
+              <div className="text-lg text-muted-foreground" data-testid="round-indicator">
                 Round <span className="text-primary font-semibold">{currentRound + 1}</span>
               </div>
             </div>
@@ -339,14 +338,6 @@ const OkeyScoreTracker: React.FC = () => {
             >
               <Trophy className="w-4 h-4" />
               End Game
-            </Button>
-            <Button 
-              variant="destructive" 
-              onClick={resetGame}
-              className="flex items-center gap-2"
-            >
-              <RotateCcw className="w-4 h-4" />
-              New Game
             </Button>
           </div>
         </div>
@@ -407,7 +398,7 @@ const OkeyScoreTracker: React.FC = () => {
                       onClick={() => toggleEditName(player.id)}
                       className="hover:bg-primary/10"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-4 h-4" data-testid="edit-icon" />
                     </Button>
                     {players.length > 2 && (
                       <Button

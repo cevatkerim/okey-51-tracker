@@ -1,50 +1,100 @@
-# React + TypeScript + Vite
+# Okey51 Score Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive web application for tracking scores in Okey51 games. Built with React, TypeScript, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🎮 Track scores for multiple players in real-time
+- 📊 Round-by-round score tracking with expandable history
+- 🏆 Automatic winner calculation (lowest score wins)
+- 🎯 End game celebration with confetti animation
+- 🔄 New game functionality with complete state reset
+- 💾 Persistent storage using localStorage
+- 📱 Fully responsive design
+- 🌓 Modern UI with beautiful animations
 
-## Expanding the ESLint configuration
+## Core Functionality
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Player Management**
+  - Add/remove players before game starts
+  - Edit player names at any time
+  - Minimum of 2 players required
 
-- Configure the top-level `parserOptions` property like this:
+- **Score Tracking**
+  - Add positive or negative scores for each player
+  - Remove last entered score
+  - View round totals and grand totals
+  - Expandable round history
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **Game Flow**
+  - Start new rounds
+  - End game to see winner and rankings
+  - Start new game with fresh state
+
+## Technical Stack
+
+- React 18
+- TypeScript
+- Tailwind CSS
+- Vite
+- Playwright for E2E testing
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm run test
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Deployment
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+The application is containerized and can be deployed using Docker:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+# Build Docker image
+docker build -t okey-tracker:1.0 .
+
+# Run container
+docker run -p 80:80 okey-tracker:1.0
 ```
+
+## Kubernetes Deployment
+
+The application can be deployed to Kubernetes using the provided manifests in `k8s/deployment.yaml`. The deployment includes:
+
+- Service configuration
+- Ingress setup with TLS
+- Deployment configuration with resource limits
+- Certificate management
+
+## Environment Variables
+
+No environment variables are required as the application uses client-side storage only.
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

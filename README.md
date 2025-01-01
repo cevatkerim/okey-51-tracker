@@ -1,6 +1,6 @@
 # Okey51 Score Tracker
 
-A modern, responsive web application for tracking scores in Okey51 games. Built with React, TypeScript, and Tailwind CSS.
+A responsive web application for tracking scores in Okey 51 games. Built with React, TypeScript, and shadcn/ui.
 
 ## Features
 

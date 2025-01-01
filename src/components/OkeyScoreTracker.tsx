@@ -302,49 +302,55 @@ const OkeyScoreTracker: React.FC = () => {
   return (
     <div className="p-4 max-w-6xl mx-auto" data-testid="score-tracker">
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-4">
+        <div className="flex justify-between items-center mb-4 flex-col sm:flex-row gap-4">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
             <img 
               src={okey51Logo} 
               alt="Okey 51 Logo" 
-              className="w-24 h-24"
+              className="w-16 h-16 sm:w-24 sm:h-24"
             />
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-foreground">
                 Score Tracker
               </h1>
-              <div className="text-lg text-muted-foreground" data-testid="round-indicator">
+              <div className="text-base sm:text-lg text-muted-foreground" data-testid="round-indicator">
                 Round <span className="text-primary font-semibold">{currentRound + 1}</span>
               </div>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-center sm:justify-end">
             <Button 
               variant="outline" 
               onClick={addPlayer}
               disabled={hasAnyScores()}
               title={hasAnyScores() ? "Cannot add players after game has started" : "Add new player"}
               className="flex items-center gap-2 border-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+              size="sm"
             >
               <UserPlus className="w-4 h-4" />
-              Add Player
+              <span className="hidden sm:inline">Add Player</span>
+              <span className="sm:hidden">Add</span>
             </Button>
             <Button 
               variant="outline" 
               onClick={startNewRound}
               className="flex items-center gap-2 border-primary hover:bg-primary/10"
+              size="sm"
             >
               <Plus className="w-4 h-4" />
-              New Round
+              <span className="hidden sm:inline">New Round</span>
+              <span className="sm:hidden">Round</span>
             </Button>
             <Button 
               variant="outline"
               onClick={endGame}
               className="flex items-center gap-2 border-primary hover:bg-primary/10"
               disabled={!hasAnyScores()}
+              size="sm"
             >
               <Trophy className="w-4 h-4" />
-              End Game
+              <span className="hidden sm:inline">End Game</span>
+              <span className="sm:hidden">End</span>
             </Button>
           </div>
         </div>

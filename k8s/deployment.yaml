@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: okey-tracker-svc
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: okey-tracker
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: okey-tracker-http
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: cloudflare-clusterissuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  rules:
+  - host: okey51.beertini.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: okey-tracker-svc
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - okey51.beertini.com
+    secretName: okey-tracker-certificate-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: okey-tracker
+  name: okey-tracker
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: okey-tracker
+  template:
+    metadata:
+      labels:
+        app: okey-tracker
+    spec:
+      containers:
+        - image: harbor.lxc.beertini.com/library/okey-tracker:1.0
+          name: okey-tracker
+          securityContext:
+            allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: okey-tracker-certificate
+  namespace: default
+spec:
+  secretName: okey-tracker-certificate-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+  dnsNames:
+  - okey51.beertini.com 

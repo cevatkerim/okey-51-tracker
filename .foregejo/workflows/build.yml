@@ -70,7 +70,7 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t harbor.lxc.beertini.com/library/vite-app:latest .
-          docker tag harbor.lxc.beertini.com/library/vite-app:latest harbor.lxc.beertini.com/library/vite-app:${{ github.sha }}
-          docker push harbor.lxc.beertini.com/library/vite-app:latest
-          docker push harbor.lxc.beertini.com/library/vite-app:${{ github.sha }}
+          docker build -t harbor.lxc.beertini.com/library/okey-tracker:latest .
+          docker tag harbor.lxc.beertini.com/library/okey-tracker:latest harbor.lxc.beertini.com/library/okey-tracker:${{ github.sha }}
+          docker push harbor.lxc.beertini.com/library/okey-tracker:latest
+          docker push harbor.lxc.beertini.com/library/okey-tracker:${{ github.sha }}

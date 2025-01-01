@@ -80,7 +80,14 @@ const OkeyScoreTracker: React.FC = () => {
   }, [players, currentRound, expandedRounds, isGameEnded]);
 
   const resetGame = () => {
-    setPlayers(initialPlayers);
+    // Clear localStorage
+    localStorage.removeItem(STORAGE_KEY);
+    
+    // Reset all state to initial values
+    setPlayers(initialPlayers.map(player => ({
+      ...player,
+      rounds: [[]]
+    })));
     setCurrentRound(0);
     setInputValues({});
     setExpandedRounds({});
